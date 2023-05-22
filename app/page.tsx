@@ -74,7 +74,7 @@ export default function Home() {
           target="_blank"
           rel="no-opener"
           href={transaction}
-          className="h-12 px-12 mt-2 font-semibold text-black bg-black border-white rounded-full"
+          className="h-12 px-12 mt-2 font-semibold text-white bg-black border border-white rounded-full"
         >
           View Arweave Data
         </a>
