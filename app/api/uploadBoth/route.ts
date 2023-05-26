@@ -7,8 +7,9 @@ const MIN_FUNDS = 0.05;
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as any;
-  const text = formData.get("text") as string;
-
+  const category = formData.get("category") as string;
+  const headline = formData.get("headline") as string;
+  const teaser = formData.get("teaser") as string;
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const bundlr = new Bundlr(
@@ -28,7 +29,9 @@ export async function POST(req: NextRequest) {
   const tx = await bundlr.upload(buffer, {
     tags: [
       { name: "Content-Type", value: "image/png" },
-      { name: "Text", value: text }, // Add text as a tag or metadata
+      { name: "Category", value: category },
+      { name: "Headline", value: headline },
+      { name: "Teaser", value: teaser },
     ],
   });
 
