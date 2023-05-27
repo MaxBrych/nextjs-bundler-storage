@@ -29,17 +29,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <ThirdwebProvider
-          activeChain={activeChain}
-          supportedWallets={[coinbaseWallet(), localWallet(), metamaskWallet()]}
-        >
-          <ChakraProvider>
-            <NavBar />
-            {children}
-          </ChakraProvider>
-        </ThirdwebProvider>
-      </body>
+      <ThirdwebProvider
+        activeChain={activeChain}
+        supportedWallets={[coinbaseWallet(), localWallet(), metamaskWallet()]}
+      >
+        <ChakraProvider>
+          <NavBar />
+          <body>{children}</body>
+        </ChakraProvider>
+      </ThirdwebProvider>
     </html>
   );
 }
