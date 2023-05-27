@@ -43,6 +43,10 @@ interface Vote {
   type: number;
   label: string;
 }
+interface ArticleListProps {
+  // Define `vote` prop to have the type of your contract
+  vote: any; // Ideally, you should replace `any` with the correct contract type
+}
 
 interface Proposal {
   proposalId: any;
@@ -243,6 +247,7 @@ const Home = () => {
                   })}
                 </TableCaption>
               </Table>
+              <ArticleList />
             </Card>
             <GridItem gap={4}>
               <Heading fontSize={20}>Active Proposals</Heading>
