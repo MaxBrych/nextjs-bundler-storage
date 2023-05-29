@@ -7,7 +7,7 @@ interface ArticleProps {
 }
 
 const Article: React.FC<ArticleProps> = ({ title, imageUrl }) => (
-  <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
+  <Box borderWidth="1px" borderRadius="lg" padding="4" marginTop="4">
     <Heading as="h2" size="lg">
       {title}
     </Heading>
