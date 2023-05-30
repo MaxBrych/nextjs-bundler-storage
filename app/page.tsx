@@ -37,6 +37,7 @@ import CreateArticleProposal from "@/components/CreateArticleProposal";
 import CreateProposal from "@/components/CreateProposal";
 import ArticleList from "@/components/ArticleList";
 import Article from "@/components/Article";
+import Navbar from "@/components/NavBar";
 
 interface Vote {
   type: number;
@@ -217,6 +218,7 @@ const Home = () => {
   if (hasClaimedNFT) {
     return (
       <>
+        <Navbar />
         <Container padding={16} maxWidth={1240} className="member-page">
           <Center>
             <Heading>DAO Dashboard</Heading>

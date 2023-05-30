@@ -13,6 +13,8 @@ interface ArticleData {
   headline: string;
   teaser: string;
   imageUrl: string;
+  proposer: string;
+  timestamp: string;
 }
 
 const ArticleList: React.FC = () => {
@@ -85,6 +87,8 @@ const ArticleList: React.FC = () => {
                 headline,
                 teaser,
                 imageUrl: proposal.description,
+                proposer: proposal.proposer, // assuming "proposer" is the correct property name
+                timestamp: proposal.timestamp, // assuming "timestamp" is the correct property name
               };
             } else {
               console.error("No transaction data returned from Arweave");
@@ -115,6 +119,8 @@ const ArticleList: React.FC = () => {
           headline={article.headline}
           teaser={article.teaser}
           imageUrl={article.imageUrl}
+          proposer={article.proposer}
+          timestamp={article.timestamp}
         />
       ))}
     </div>
