@@ -66,7 +66,7 @@ const Home = () => {
     "edition-drop"
   );
   const { contract: vote } = useContract(
-    "0x299E2B4129eA5Ca4b3a572086A86C015D726C0EC",
+    "0x80Df461EF950721649675B05Eb116687F5145D96",
     "vote"
   );
   if (vote === undefined) {

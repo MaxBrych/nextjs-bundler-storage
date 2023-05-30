@@ -9,7 +9,9 @@ interface MySmartContract extends ethers.Contract {
 }
 
 interface ArticleData {
-  title: string;
+  category: string;
+  headline: string;
+  teaser: string;
   imageUrl: string;
 }
 
@@ -24,23 +26,81 @@ const ArticleList: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Get all proposals from the contract
+      if (!vote) {
+        console.error("Vote contract is not loaded yet");
+        return;
+      }
+
       const proposals = await vote.getAll();
 
-      // Filter out the proposals that have an Arweave URL as the description
-      const arweaveProposals = proposals.filter((proposal: any) =>
-        proposal.description.startsWith("https://arweave.net/")
-      );
+      const fetchedArticles: ArticleData[] = await Promise.all(
+        proposals.map(async (proposal: any) => {
+          if (proposal.description.startsWith("https://arweave.net/")) {
+            const transactionId = proposal.description.split("/").pop();
 
-      // Prepare the article data for each Arweave URL
-      const fetchedArticles: ArticleData[] = arweaveProposals.map(
-        (proposal: { title: any; description: any }) => ({
-          title: proposal.title, // In this example, we're assuming the title of the article is the proposal's title.
-          imageUrl: proposal.description,
+            // GraphQL query
+            const query = `
+            query getByIds {
+              transactions(ids:["${transactionId}"]) {
+                edges {
+                  node {
+                    id
+                    tags {
+                      name
+                      value
+                    }
+                  }
+                }
+              }
+            }`;
+
+            // Make a POST request to the GraphQL endpoint
+            const response = await fetch("https://arweave.net/graphql", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                query: query,
+              }),
+            });
+
+            const result = await response.json();
+
+            // Get the metadata from the tags
+            if (result.data.transactions.edges[0]) {
+              const tags = result.data.transactions.edges[0].node.tags;
+              const category = tags.find(
+                (tag: any) => tag.name === "Category"
+              )?.value;
+              const headline = tags.find(
+                (tag: any) => tag.name === "Headline"
+              )?.value;
+              const teaser = tags.find(
+                (tag: any) => tag.name === "Teaser"
+              )?.value;
+
+              return {
+                category,
+                headline,
+                teaser,
+                imageUrl: proposal.description,
+              };
+            } else {
+              console.error("No transaction data returned from Arweave");
+              return null;
+            }
+          } else {
+            return null;
+          }
         })
       );
 
-      setArticles(fetchedArticles);
+      const validArticles = fetchedArticles.filter(
+        (article) => article !== null
+      );
+
+      setArticles(validArticles);
     };
 
     fetchData();
@@ -51,7 +111,9 @@ const ArticleList: React.FC = () => {
       {articles.map((article, index) => (
         <Article
           key={index}
-          title={article.title}
+          category={article.category}
+          headline={article.headline}
+          teaser={article.teaser}
           imageUrl={article.imageUrl}
         />
       ))}
