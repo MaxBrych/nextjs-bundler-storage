@@ -21,7 +21,12 @@ const Article: React.FC<ArticleProps> = ({
   const formattedProposer = `${proposer.slice(0, 6)}...${proposer.slice(-4)}`;
 
   return (
-    <Box borderWidth="1px" borderRadius="lg" padding="4" marginTop="4">
+    <Box
+      borderWidth="1px"
+      borderRadius="lg"
+      padding={{ base: "2", md: "4" }}
+      marginTop="4"
+    >
       <Heading as="h5" size="md">
         {category}
       </Heading>
