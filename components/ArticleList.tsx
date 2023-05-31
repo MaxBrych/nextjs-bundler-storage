@@ -15,6 +15,7 @@ interface ArticleData {
   imageUrl: string;
   proposer: string;
   timestamp: string;
+  body: any | undefined;
 }
 
 const ArticleList: React.FC = () => {
@@ -81,6 +82,7 @@ const ArticleList: React.FC = () => {
               const teaser = tags.find(
                 (tag: any) => tag.name === "Teaser"
               )?.value;
+              const body = tags.find((tag: any) => tag.name === "Body")?.value;
 
               return {
                 category,
@@ -88,7 +90,8 @@ const ArticleList: React.FC = () => {
                 teaser,
                 imageUrl: proposal.description,
                 proposer: proposal.proposer, // assuming "proposer" is the correct property name
-                timestamp: proposal.timestamp, // assuming "timestamp" is the correct property name
+                timestamp: proposal.timestamp,
+                body, // assuming "timestamp" is the correct property name
               };
             } else {
               console.error("No transaction data returned from Arweave");
@@ -121,6 +124,7 @@ const ArticleList: React.FC = () => {
           imageUrl={article.imageUrl}
           proposer={article.proposer}
           timestamp={article.timestamp}
+          body={article.body}
         />
       ))}
     </div>

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
 import {
   Box,
   Input,
@@ -7,12 +7,26 @@ import {
   FormLabel,
   Textarea,
 } from "@chakra-ui/react";
+import { withReact, Slate, Editable, ReactEditor } from "slate-react";
+import { BaseEditor, createEditor, Descendant, Element } from "slate";
+
 import { useAddress, useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
+import { HistoryEditor } from "slate-history";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
   propose: (transactionId: string) => Promise<void>;
+}
+type CustomElement = { type: "paragraph"; children: CustomText[] };
+type CustomText = { text: string; bold?: boolean };
+
+declare module "slate" {
+  interface CustomTypes {
+    Editor: BaseEditor & ReactEditor & HistoryEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
 }
 
 export default function CreateProposalArticle() {
@@ -22,6 +36,10 @@ export default function CreateProposalArticle() {
   const [teaser, setTeaser] = useState("");
   const [file, setFile] = useState<any>();
   const [transaction, setTransaction] = useState("");
+  const editor = useMemo(() => withReact(createEditor()), []); // initialize the Slate editor
+  const [bodyValue, setBodyValue] = useState<Descendant[]>([
+    { type: "paragraph", children: [{ text: "" }] },
+  ]);
 
   const { contract: voteContract, isLoading: isVoteLoading } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
@@ -36,6 +54,8 @@ export default function CreateProposalArticle() {
     formData.append("category", category);
     formData.append("headline", headline);
     formData.append("teaser", teaser);
+    formData.append("body", JSON.stringify(bodyValue));
+
     try {
       const response = await fetch("/api/uploadBoth", {
         method: "POST",
@@ -106,6 +126,16 @@ export default function CreateProposalArticle() {
               borderRadius="xl"
             />
           </FormControl>
+          <FormControl marginTop="4">
+            <Slate
+              editor={editor}
+              initialValue={bodyValue}
+              onChange={setBodyValue}
+            >
+              <Editable />
+            </Slate>
+          </FormControl>
+
           <Button
             colorScheme="blue"
             marginTop="4"
