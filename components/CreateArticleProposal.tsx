@@ -1,33 +1,105 @@
-import React, { ChangeEvent, useEffect, useState, useMemo } from "react";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
+import { Box, Input, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import { withReact, Slate, Editable, ReactEditor, useSlate } from "slate-react";
 import {
-  Box,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  Textarea,
-} from "@chakra-ui/react";
-import { withReact, Slate, Editable, ReactEditor } from "slate-react";
-import { BaseEditor, createEditor, Descendant, Element } from "slate";
+  BaseEditor,
+  createEditor,
+  Descendant,
+  Element,
+  Transforms,
+  Editor,
+  Text,
+  Node,
+  NodeEntry,
+} from "slate";
+import { RenderLeafProps } from "slate-react";
+import styled from "styled-components";
 
 import { useAddress, useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import { HistoryEditor } from "slate-history";
+
+import { CustomElement } from "../constants/costum-types"; // Import your custom types here
+import { renderLeaf } from "./RenderFunctions";
+import Toolbar from "./Toolbar";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
   propose: (transactionId: string) => Promise<void>;
 }
-type CustomElement = { type: "paragraph"; children: CustomText[] };
-type CustomText = { text: string; bold?: boolean };
 
-declare module "slate" {
-  interface CustomTypes {
-    Editor: BaseEditor & ReactEditor & HistoryEditor;
-    Element: CustomElement;
-    Text: CustomText;
+// usage
+const text = { text: "This is some text" };
+const paragraph = { type: "paragraph", children: [text] };
+const editor = createEditor();
+
+const match: NodeEntry<CustomElement>[] = Array.from(
+  Editor.nodes(editor, {
+    match: (n) => Element.isElement(n) && n.type === "paragraph",
+  })
+);
+
+match.forEach(([node, path]) => {
+  if ("type" in node && node.type === "paragraph") {
+    console.log(node.children);
   }
-}
+});
+
+const StyledH2 = styled.h2`
+  font-size: 30pt;
+`;
+
+const StyledH3 = styled.h3`
+  font-size: 24pt;
+`;
+
+const toggleFormat = (editor: Editor, format: any) => {
+  const isBlock = [
+    "heading-two",
+    "heading-three",
+    "blockquote",
+    "bulleted-list",
+    "numbered-list",
+  ].includes(format);
+
+  if (isBlock) {
+    const isActive = isBlockActive(editor, format);
+    Transforms.setNodes(
+      editor,
+      { type: isActive ? "paragraph" : format },
+      { match: (n: any) => Editor.isBlock(editor, n) }
+    );
+  } else {
+    const isActive = isFormatActive(editor, format);
+    Transforms.setNodes(
+      editor,
+      { [format]: isActive ? null : true },
+      { match: (n: any) => Text.isText(n), split: true }
+    );
+  }
+};
+const isBlockActive = (editor: Editor, format: string) => {
+  const match: any = Array.from(
+    Editor.nodes(editor, {
+      match: (n: any) => Element.isElement(n) && n.type === "paragraph",
+    })
+  );
+  return !!match;
+};
+
+const isFormatActive = (editor: Editor, format: string) => {
+  match.forEach(([node, path]: any) => {
+    if ("type" in node && node.type === "paragraph") {
+      console.log(node.children);
+    }
+  });
+  return !!match;
+};
 
 export default function CreateProposalArticle() {
   const address = useAddress();
@@ -78,6 +150,27 @@ export default function CreateProposalArticle() {
       setFile(event.target.files[0]);
     }
   };
+
+  const renderElement = useCallback((props: any) => {
+    switch (props.element.type) {
+      case "heading-two":
+        return <StyledH2 {...props.attributes}>{props.children}</StyledH2>;
+      case "heading-three":
+        return <StyledH3 {...props.attributes}>{props.children}</StyledH3>;
+      case "blockquote":
+        return <blockquote {...props.attributes}>{props.children}</blockquote>;
+      case "link":
+        return (
+          <a {...props.attributes} href={props.element.href}>
+            {props.children}
+          </a>
+        );
+      case "image":
+        return <img {...props.attributes} src={props.element.url} />;
+      default:
+        return <p {...props.attributes}>{props.children}</p>;
+    }
+  }, []);
 
   return (
     <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
@@ -130,9 +223,14 @@ export default function CreateProposalArticle() {
             <Slate
               editor={editor}
               initialValue={bodyValue}
-              onChange={setBodyValue}
+              onChange={(value) => setBodyValue(value)}
             >
-              <Editable />
+              <Toolbar />
+              <Editable
+                renderElement={renderElement}
+                renderLeaf={renderLeaf}
+                placeholder="Enter some text..."
+              />
             </Slate>
           </FormControl>
 
@@ -150,3 +248,17 @@ export default function CreateProposalArticle() {
     </Box>
   );
 }
+const Leaf = (props: RenderLeafProps) => {
+  let { children } = props;
+  if (props.leaf.bold) {
+    children = <strong>{children}</strong>;
+  }
+  if (props.leaf.italic) {
+    children = <em>{children}</em>;
+  }
+  if (props.leaf.underline) {
+    children = <u>{children}</u>;
+  }
+
+  return <span {...props.attributes}>{children}</span>;
+};

@@ -363,8 +363,6 @@ const Home = () => {
                   }
                 }}
               >
-                <CreateArticleProposal />
-
                 <Button disabled={isVoting || hasVoted} type="submit">
                   {isVoting ? (
                     <Spinner />

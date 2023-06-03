@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Box, Heading, Image, Text } from "@chakra-ui/react";
 import { Editable, withReact, Slate } from "slate-react";
-import { createEditor } from "slate";
+import { createEditor, Descendant } from "slate";
+import { renderElement, renderLeaf } from "./RenderFunctions"; // Imp./RenderFunctionsfunctions
 
 interface ArticleProps {
   category: string;
@@ -24,17 +25,13 @@ const Article: React.FC<ArticleProps> = ({
 }) => {
   const formattedProposer = `${proposer.slice(0, 6)}...${proposer.slice(-4)}`;
 
-  let initialBodyValue;
+  let initialBodyValue: Descendant[];
   try {
-    // Attempt to parse the body prop. If it's undefined or not valid JSON,
-    // this will throw an error, and we'll catch it and set a default value instead.
     initialBodyValue = JSON.parse(body || "");
   } catch {
-    // If we couldn't parse the body prop, fall back to a default value
     initialBodyValue = [{ type: "paragraph", children: [{ text: "" }] }];
   }
 
-  // Initialize the Slate editor
   const editor = useMemo(() => withReact(createEditor()), []);
   const [bodyValue, setBodyValue] = useState(initialBodyValue);
 
@@ -61,11 +58,12 @@ const Article: React.FC<ArticleProps> = ({
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
       <Image src={imageUrl} alt={headline} mt={4} />
-      <Text as="p" size="md">
-        {body}
-      </Text>
-      <Slate editor={editor} initialValue={bodyValue}>
-        <Editable readOnly />
+      <Slate editor={editor} initialValue={bodyValue} onChange={setBodyValue}>
+        <Editable
+          readOnly
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+        />
       </Slate>
     </Box>
   );
