@@ -5,7 +5,24 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { Box, Input, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  Button,
+  FormControl,
+  FormLabel,
+  Popover,
+  PopoverContent,
+  PopoverCloseButton,
+  PopoverBody,
+  ButtonGroup,
+  Tooltip,
+  PopoverHeader,
+  PopoverTrigger,
+  IconButton,
+  PopoverArrow,
+  Flex,
+} from "@chakra-ui/react";
 import { withReact, Slate, Editable, ReactEditor, useSlate } from "slate-react";
 import {
   BaseEditor,
@@ -26,12 +43,32 @@ import { ethers } from "ethers";
 
 import { CustomElement } from "../constants/costum-types"; // Import your custom types here
 import { renderLeaf } from "./RenderFunctions";
-import Toolbar from "./Toolbar";
+import {
+  BiBold,
+  BiItalic,
+  BiUnderline,
+  BiHeading,
+  BiListUl,
+} from "react-icons/bi";
+import { FaQuoteLeft } from "react-icons/fa";
+import { RiListOrdered } from "react-icons/ri";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
   propose: (transactionId: string) => Promise<void>;
 }
+type ToolbarButton = (typeof toolbarButtons)[number];
+
+const toolbarButtons = [
+  { format: "bold", label: "Bold", icon: BiBold },
+  { format: "italic", label: "Italic", icon: BiItalic },
+  { format: "underline", label: "Underline", icon: BiUnderline },
+  { format: "heading-two", label: "H2", icon: BiHeading },
+  { format: "heading-three", label: "H3", icon: BiHeading },
+  { format: "blockquote", label: "Quote", icon: FaQuoteLeft },
+  { format: "numbered-list", label: "Numbered List", icon: RiListOrdered },
+  { format: "bulleted-list", label: "Bulleted List", icon: BiListUl },
+] as const;
 
 // usage
 const text = { text: "This is some text" };
@@ -90,6 +127,29 @@ const isBlockActive = (editor: Editor, format: string) => {
     })
   );
   return !!match;
+};
+
+const Toolbar = () => {
+  const editor = useSlate();
+
+  return (
+    <Flex>
+      <ButtonGroup>
+        {toolbarButtons.map((button) => (
+          <Tooltip label={button.label} key={button.format}>
+            <IconButton
+              onMouseDown={(event) => {
+                event.preventDefault();
+                toggleFormat(editor, button.format);
+              }}
+              icon={<button.icon />}
+              aria-label={""}
+            />
+          </Tooltip>
+        ))}
+      </ButtonGroup>
+    </Flex>
+  );
 };
 
 const isFormatActive = (editor: Editor, format: string) => {
@@ -228,7 +288,7 @@ export default function CreateProposalArticle() {
               <Toolbar />
               <Editable
                 renderElement={renderElement}
-                renderLeaf={renderLeaf}
+                renderLeaf={Leaf}
                 placeholder="Enter some text..."
               />
             </Slate>
@@ -258,6 +318,9 @@ const Leaf = (props: RenderLeafProps) => {
   }
   if (props.leaf.underline) {
     children = <u>{children}</u>;
+  }
+  if (props.leaf.code) {
+    children = <code>{children}</code>;
   }
 
   return <span {...props.attributes}>{children}</span>;
