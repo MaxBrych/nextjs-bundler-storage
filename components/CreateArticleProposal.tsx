@@ -279,6 +279,8 @@ export default function CreateProposalArticle() {
               borderRadius="xl"
             />
           </FormControl>
+
+          {/* 
           <FormControl marginTop="4">
             <Slate
               editor={editor}
@@ -293,7 +295,7 @@ export default function CreateProposalArticle() {
               />
             </Slate>
           </FormControl>
-
+*/}
           <Button
             colorScheme="blue"
             marginTop="4"
