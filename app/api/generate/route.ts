@@ -4,9 +4,7 @@ if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
   throw new Error("Missing env var from OpenAI");
 }
 
-export const config = {
-  runtime: "nodejs",
-};
+export const runtime = "edge";
 
 const handler = async (req: Request): Promise<Response> => {
   const { prompt } = (await req.json()) as {
