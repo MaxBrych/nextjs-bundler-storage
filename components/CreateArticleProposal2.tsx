@@ -117,11 +117,7 @@ export default function CreateProposalArticle() {
             />
           </FormControl>
           <FormControl marginTop="4">
-            <Editor
-              className=""
-              completionApi="/api/generate"
-              onUpdate={handleEditorUpdate}
-            />
+            <Editor className="" onUpdate={handleEditorUpdate} />
           </FormControl>
 
           <Button
