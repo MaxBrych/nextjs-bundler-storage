@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Box, Heading, Image, Text } from "@chakra-ui/react";
-import { Editable, withReact, Slate } from "slate-react";
-import { createEditor, Descendant } from "slate";
-import { renderElement, renderLeaf } from "./RenderFunctions"; // Imp./RenderFunctionsfunctions
+import { Editor } from "novel";
 
 interface ArticleProps {
   category: string;
@@ -24,16 +22,25 @@ const Article: React.FC<ArticleProps> = ({
   body,
 }) => {
   const formattedProposer = `${proposer.slice(0, 6)}...${proposer.slice(-4)}`;
-
-  let initialBodyValue: Descendant[];
-  try {
-    initialBodyValue = JSON.parse(body || "");
-  } catch {
-    initialBodyValue = [{ type: "paragraph", children: [{ text: "" }] }];
-  }
-
-  const editor = useMemo(() => withReact(createEditor()), []);
-  const [bodyValue, setBodyValue] = useState(initialBodyValue);
+  // Convert body (string) to a format suitable for the Novel Editor
+  const formattedBody = useMemo(() => {
+    return {
+      document: {
+        nodes: [
+          {
+            object: "block",
+            type: "paragraph",
+            nodes: [
+              {
+                object: "text",
+                leaves: [{ text: body || "" }],
+              },
+            ],
+          },
+        ],
+      },
+    };
+  }, [body]);
 
   return (
     <Box
@@ -58,13 +65,10 @@ const Article: React.FC<ArticleProps> = ({
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
       <Image src={imageUrl} alt={headline} mt={4} />
-      <Slate editor={editor} initialValue={bodyValue} onChange={setBodyValue}>
-        <Editable
-          readOnly
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-        />
-      </Slate>
+      <Editor
+        defaultValue={formattedBody}
+        editorProps={{ editable: () => false }}
+      />
     </Box>
   );
 };
