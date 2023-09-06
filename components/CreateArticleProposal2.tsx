@@ -39,7 +39,7 @@ export default function CreateProposalArticle() {
     formData.append("category", category);
     formData.append("headline", headline);
     formData.append("teaser", teaser);
-    formData.append("body", JSON.stringify(bodyValue));
+    formData.append("body", bodyValue);
 
     try {
       const response = await fetch("/api/uploadBoth", {
