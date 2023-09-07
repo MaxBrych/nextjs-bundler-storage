@@ -15,14 +15,22 @@ interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
   propose: (transactionId: string) => Promise<void>;
 }
+interface CreateProposalArticleProps {
+  article?: {
+    body: string;
+  };
+}
 
-export default function CreateProposalArticle() {
+export default function CreateProposalArticle({
+  article,
+}: CreateProposalArticleProps) {
   const address = useAddress();
   const [category, setCategory] = useState("");
   const [headline, setHeadline] = useState("");
   const [teaser, setTeaser] = useState("");
   const [file, setFile] = useState<any>();
   const [transaction, setTransaction] = useState("");
+
   // New state variable for the editor content
   const [bodyValue, setBodyValue] = useState("");
 
@@ -39,7 +47,7 @@ export default function CreateProposalArticle() {
     formData.append("category", category);
     formData.append("headline", headline);
     formData.append("teaser", teaser);
-    formData.append("body", bodyValue);
+    formData.append("body", JSON.stringify(bodyValue));
 
     try {
       const response = await fetch("/api/uploadBoth", {
@@ -56,6 +64,7 @@ export default function CreateProposalArticle() {
     } catch (err) {
       console.log({ err });
     }
+    console.log("Body Value to upload:", bodyValue);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -67,7 +76,9 @@ export default function CreateProposalArticle() {
     if (editor) {
       setBodyValue(editor.getJSON()); // or editor.getHTML() or editor.getText() based on the API of the Editor component
     }
+    //console.log(editor.getJSON());
   };
+  const defaultEditorContent = "<p>Start writing...</p>"; // or whatever your default content should be
 
   return (
     <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
@@ -117,7 +128,10 @@ export default function CreateProposalArticle() {
             />
           </FormControl>
           <FormControl marginTop="4">
-            <Editor className="" onUpdate={handleEditorUpdate} />
+            <Editor
+              defaultValue={article?.body || defaultEditorContent}
+              onUpdate={handleEditorUpdate}
+            />
           </FormControl>
 
           <Button

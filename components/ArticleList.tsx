@@ -85,7 +85,13 @@ const ArticleList: React.FC = () => {
               let bodyContent = tags.find(
                 (tag: any) => tag.name === "Body"
               )?.value;
-              const body = bodyContent ? JSON.parse(bodyContent) : null;
+              const body =
+                bodyContent && bodyContent.startsWith("{")
+                  ? JSON.parse(bodyContent)
+                  : bodyContent
+                  ? bodyContent
+                  : null;
+              console.log("Body Content retrieved:", bodyContent);
 
               return {
                 category,
