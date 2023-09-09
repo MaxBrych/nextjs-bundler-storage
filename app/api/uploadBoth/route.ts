@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const headline = formData.get("headline") as string;
   const teaser = formData.get("teaser") as string;
   const buffer = Buffer.from(await file.arrayBuffer());
-  const body = formData.get("body") as any;
+  //const body = formData.get("body") as any;
 
   const bundlr = new Bundlr(
     "http://node1.bundlr.network",
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       { name: "Category", value: category },
       { name: "Headline", value: headline },
       { name: "Teaser", value: teaser },
-      { name: "Body", value: body },
+      //{ name: "Body", value: body },
     ],
   });
 

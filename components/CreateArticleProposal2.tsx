@@ -47,7 +47,7 @@ export default function CreateProposalArticle({
     formData.append("category", category);
     formData.append("headline", headline);
     formData.append("teaser", teaser);
-    formData.append("body", JSON.stringify(bodyValue));
+    //formData.append("body", JSON.stringify(bodyValue));
 
     try {
       const response = await fetch("/api/uploadBoth", {
@@ -136,10 +136,7 @@ export default function CreateProposalArticle({
             />
           </FormControl>
           <FormControl marginTop="4">
-            <Editor
-              defaultValue={article?.body || defaultEditorContent}
-              onUpdate={handleEditorUpdate}
-            />
+            <Editor defaultValue={article?.body || defaultEditorContent} />
           </FormControl>
 
           <Button
