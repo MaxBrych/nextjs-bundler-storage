@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const headline = formData.get("headline") as string;
   const teaser = formData.get("teaser") as string;
   const buffer = Buffer.from(await file.arrayBuffer());
-  const body = formData.get("body") as string;
+  const body = formData.get("body") as any;
 
   const bundlr = new Bundlr(
     "http://node1.bundlr.network",
