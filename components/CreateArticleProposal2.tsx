@@ -64,6 +64,13 @@ export default function CreateProposalArticle({
     } catch (err) {
       console.log({ err });
     }
+    try {
+      JSON.parse(bodyValue);
+    } catch (e) {
+      console.error("Invalid JSON:", bodyValue);
+      return;
+    }
+
     console.log("Body Value to upload:", bodyValue);
   };
 
@@ -72,6 +79,7 @@ export default function CreateProposalArticle({
       setFile(event.target.files[0]);
     }
   };
+
   const handleEditorUpdate = (editor?: any) => {
     if (editor) {
       setBodyValue(editor.getJSON()); // or editor.getHTML() or editor.getText() based on the API of the Editor component
