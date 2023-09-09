@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import Bundlr from "@bundlr-network/client";
 
 const TOP_UP = "200000000000000000"; // 0.2 MATIC
-const MIN_FUNDS = 0.05;
+const MIN_FUNDS = 0.1;
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
