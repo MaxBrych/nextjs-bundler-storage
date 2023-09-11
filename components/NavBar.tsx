@@ -42,7 +42,10 @@ export default function Navbar() {
 
             <MenuList>
               <MenuItem>
-                <Link href={`/profile/${address}`}> Profile </Link>
+                <Link href={`/profile/${address}`} className="text-xl">
+                  {" "}
+                  Profile{" "}
+                </Link>
               </MenuItem>
               <MenuItem onClick={disconnect}>Sign Out</MenuItem>
             </MenuList>
