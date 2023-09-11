@@ -42,7 +42,7 @@ export default function Navbar() {
 
             <MenuList>
               <MenuItem>
-                <Link href={`/profile/${address}`} className="text-xl">
+                <Link href={`/profile/${address}`} className="text-lg">
                   {" "}
                   Profile{" "}
                 </Link>
