@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import CreateArticleProposal2 from "../../components/CreateArticleProposal2";
+import CreateProposal from "@/components/CreateProposal";
 
 export default function CreateArticle() {
   return (
-    <Box p="6" bgColor="white">
-      <CreateArticleProposal2 />
+    <Box p="6" bgColor="white" textColor={"blackAlpha.900"}>
+      <CreateProposal />
     </Box>
   );
 }

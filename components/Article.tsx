@@ -58,13 +58,6 @@ const Article: React.FC<ArticleProps> = ({
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
       <Image src={imageUrl} alt={headline} mt={4} />
-      <Slate editor={editor} initialValue={bodyValue} onChange={setBodyValue}>
-        <Editable
-          readOnly
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-        />
-      </Slate>
     </Box>
   );
 };

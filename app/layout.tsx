@@ -12,6 +12,7 @@ import {
 import { API_KEY, SMART_WALLET } from "../constants/addresses";
 import { CacheProvider } from "@emotion/react";
 import NavBar from "@/components/NavBar";
+const client = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID;
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ThirdwebProvider
+        clientId={client}
         activeChain={activeChain}
         supportedWallets={[coinbaseWallet(), localWallet(), metamaskWallet()]}
       >
