@@ -203,7 +203,7 @@ const Home = () => {
   if (!address) {
     return (
       <Container className="landing">
-        <Heading>Welcome to NeulandDAO</Heading>
+        <Heading>Welcome to The Netizen</Heading>
         <div className="btn-hero">
           <ConnectWallet />
         </div>

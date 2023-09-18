@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
   const body = formData.get("body") as string;
   const buffer = Buffer.from(await file.arrayBuffer());
 
+  console.log("Body value before upload:", body); // Check the body value
+
   const bundlr = new Bundlr(
     "http://node1.bundlr.network",
     "matic",
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
   const tx = await bundlr.upload(buffer, {
     tags: [
       { name: "Content-Type", value: "image/png" },
-      { name: "Body", value: JSON.stringify(body) },
+      { name: "Body", value: JSON.stringify(body) }, // Use the body value directly
     ],
   });
 

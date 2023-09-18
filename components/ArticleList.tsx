@@ -9,9 +9,6 @@ interface MySmartContract extends ethers.Contract {
 }
 
 interface ArticleData {
-  category: string;
-  headline: string;
-  teaser: string;
   imageUrl: string;
   proposer: string;
   timestamp: string;
@@ -73,15 +70,7 @@ const ArticleList: React.FC = () => {
             // Get the metadata from the tags
             if (result.data.transactions.edges[0]) {
               const tags = result.data.transactions.edges[0].node.tags;
-              const category = tags.find(
-                (tag: any) => tag.name === "Category"
-              )?.value;
-              const headline = tags.find(
-                (tag: any) => tag.name === "Headline"
-              )?.value;
-              const teaser = tags.find(
-                (tag: any) => tag.name === "Teaser"
-              )?.value;
+
               let bodyContent = tags.find(
                 (tag: any) => tag.name === "Body"
               )?.value;
@@ -94,9 +83,6 @@ const ArticleList: React.FC = () => {
               console.log("Body Content retrieved:", bodyContent);
 
               return {
-                category,
-                headline,
-                teaser,
                 imageUrl: proposal.description,
                 proposer: proposal.proposer, // assuming "proposer" is the correct property name
                 timestamp: proposal.timestamp,
@@ -127,9 +113,6 @@ const ArticleList: React.FC = () => {
       {articles.map((article, index) => (
         <Article
           key={index}
-          category={article.category}
-          headline={article.headline}
-          teaser={article.teaser}
           imageUrl={article.imageUrl}
           proposer={article.proposer}
           timestamp={article.timestamp}

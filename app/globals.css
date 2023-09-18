@@ -25,3 +25,10 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Example styling for the dropcursor */
+.ProseMirror .dropcursor {
+  position: absolute;
+  background-color: #ff0000; /* Red color */
+  width: 2px;
+}
