@@ -72,9 +72,7 @@ export default function CreateProposal() {
       {address && (
         <>
           <TipTap
-            onContentChange={(content: any) =>
-              setBodyValue(JSON.stringify(content))
-            }
+            onContentChange={(content: string) => setBodyValue(content)}
           />
           <FormControl marginTop="4">
             <FormLabel>Arweave File</FormLabel>
