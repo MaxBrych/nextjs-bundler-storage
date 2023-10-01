@@ -1,6 +1,7 @@
+// Import the required libraries
 import React from "react";
 import { Box, Heading, Image, Text } from "@chakra-ui/react";
-import TipTap from "./Editor/TipTap"; // Assuming you have this component
+import ReactMarkdown from "react-markdown";
 
 interface ArticleProps {
   imageUrl: string;
@@ -31,7 +32,8 @@ const Article: React.FC<ArticleProps> = ({
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
       <Image src={imageUrl} alt={"No Image"} mt={4} />
-      <TipTap content={body} readOnly={true} onContentChange={undefined} />
+      {/* Use ReactMarkdown to render the markdown content */}
+      <ReactMarkdown>{body || ""}</ReactMarkdown>
     </Box>
   );
 };
