@@ -2,17 +2,19 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import BubbleMenu from "@tiptap/extension-bubble-menu";
 import Dropcursor from "@tiptap/extension-dropcursor";
+import { schema } from "prosemirror-markdown";
+import { defaultMarkdownSerializer } from "prosemirror-markdown";
 import { ReactElement } from "react";
 
 interface TipTapProps {
-  onContentChange: (content: any) => void;
+  onContentChange: (content: string) => void;
   content?: string;
   readOnly?: boolean;
 }
 
 const TipTap = ({
   onContentChange,
-  content = "<p>Hello World! 🌎️</p>",
+  content = "*Hello World!* 🌎️",
   readOnly = false,
 }: TipTapProps): ReactElement | null => {
   const editor = useEditor({
@@ -32,8 +34,9 @@ const TipTap = ({
     content: content,
     editable: !readOnly,
     onUpdate: ({ editor }) => {
-      const json = editor.getJSON();
-      onContentChange(json);
+      const doc = editor.state.doc;
+      const markdown = defaultMarkdownSerializer.serialize(doc);
+      onContentChange(markdown);
     },
   });
 
