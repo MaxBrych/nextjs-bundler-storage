@@ -1,9 +1,11 @@
 import React from "react";
 import TipTap from "./Editor/TipTap";
+import { serializeTipTapToMarkdown } from "./serializer";
 import { useState, ChangeEvent } from "react";
 import { useAddress, useContract, useContractWrite } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { Box, Input, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import NSFWFilter from "nsfw-filter";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
@@ -19,6 +21,8 @@ export default function CreateProposal() {
   const [file, setFile] = useState<any>();
   const [transaction, setTransaction] = useState("");
   const [bodyValue, setBodyValue] = useState("");
+  const [isImageSafe, setIsImageSafe] = useState(true); // New state to manage whether the image is safe or not
+
   const address = useAddress();
 
   const { contract: voteContract, isLoading: isVoteLoading } = useContract<any>(
@@ -32,7 +36,9 @@ export default function CreateProposal() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("message", JSON.stringify(bodyValue));
+
+    // Assuming bodyValue is already a stringified JSON in the correct format
+    formData.append("message", bodyValue);
 
     try {
       const response = await fetch("/api/uploadBoth", {
@@ -61,9 +67,22 @@ export default function CreateProposal() {
     console.log("Body Value to upload:", bodyValue);
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleFileChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
     if (event.target.files) {
-      setFile(event.target.files[0]);
+      const file = event.target.files[0];
+      // Check if the image is safe
+      const isSafe = await NSFWFilter.isSafe(file);
+      setIsImageSafe(isSafe); // Update the isImageSafe state
+
+      if (isSafe) {
+        // Only set the file if it is safe
+        setFile(file);
+      } else {
+        // Optionally, you can clear the file input here or show a warning message to the user.
+        console.warn("Uploaded image is not safe");
+      }
     }
   };
 
@@ -72,9 +91,10 @@ export default function CreateProposal() {
       {address && (
         <>
           <TipTap
-            onContentChange={(content: any) =>
-              setBodyValue(JSON.stringify(content))
-            }
+            onContentChange={(content: any) => {
+              const markdown = serializeTipTapToMarkdown(content);
+              setBodyValue(markdown);
+            }}
           />
           <FormControl marginTop="4">
             <FormLabel>Arweave File</FormLabel>
@@ -92,7 +112,7 @@ export default function CreateProposal() {
           <Button
             colorScheme="blue"
             marginTop="4"
-            disabled={isVoteLoading}
+            disabled={isVoteLoading || !isImageSafe} // Disable the button if the image is not safe
             isLoading={isVoteLoading}
             onClick={uploadBoth}
           >
