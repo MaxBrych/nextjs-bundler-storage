@@ -33,7 +33,8 @@ const Article: React.FC<ArticleProps> = ({
       </Text>
       <Image src={imageUrl} alt={"No Image"} mt={4} />
       {/* Use ReactMarkdown to render the markdown content */}
-      <ReactMarkdown>{body || ""}</ReactMarkdown>
+      {/* Use dangerouslySetInnerHTML to render the HTML content */}
+      <div dangerouslySetInnerHTML={{ __html: body || "" }} />
     </Box>
   );
 };

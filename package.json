@@ -17,6 +17,7 @@
     "@thirdweb-dev/sdk": "^3.10.17",
     "@tiptap/extension-bubble-menu": "^2.1.10",
     "@tiptap/extension-dropcursor": "^2.1.10",
+    "@tiptap/extension-text-align": "^2.1.12",
     "@tiptap/pm": "^2.1.10",
     "@tiptap/react": "^2.1.10",
     "@tiptap/starter-kit": "^2.1.10",

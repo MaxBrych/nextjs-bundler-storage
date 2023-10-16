@@ -79,7 +79,9 @@ export default function CreateProposal() {
     <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
       {address && (
         <>
-          <TipTap ref={editorRef} />
+          <div>
+            <TipTap ref={editorRef} />
+          </div>
           <FormControl marginTop="4">
             <FormLabel>Arweave Image</FormLabel>
             <Input

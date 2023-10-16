@@ -32,7 +32,6 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
-import CreateArticleProposal from "@/components/CreateArticleProposal";
 import ArticleList from "@/components/ArticleList";
 import Article from "@/components/Article";
 import Navbar from "@/components/NavBar";
