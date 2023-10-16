@@ -7,8 +7,9 @@ const MIN_FUNDS = 0.1;
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as any;
-  const body = formData.get("body") as string;
+  const body = formData.get("message") as string; // body value
   const buffer = Buffer.from(await file.arrayBuffer());
+  const bodyString = typeof body === "string" ? body : JSON.stringify(body);
 
   console.log("Body value before upload:", body); // Check the body value
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
   const tx = await bundlr.upload(buffer, {
     tags: [
       { name: "Content-Type", value: "image/png" },
-      { name: "Body", value: body }, // Use the body value directly
+      { name: "Body", value: bodyString }, // Use the body value directly
     ],
   });
 

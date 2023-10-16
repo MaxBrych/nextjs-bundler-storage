@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import TipTap from "./Editor/TipTap";
 import { useState, ChangeEvent } from "react";
 import { useAddress, useContract, useContractWrite } from "@thirdweb-dev/react";
@@ -16,6 +16,8 @@ interface CreateProposalArticleProps {
 }
 
 export default function CreateProposal() {
+  const editorRef = useRef<{ getHTML: () => string } | null>(null);
+
   const [file, setFile] = useState<any>();
   const [transaction, setTransaction] = useState("");
   const [bodyValue, setBodyValue] = useState("");
@@ -28,11 +30,17 @@ export default function CreateProposal() {
   const vote = voteContract as unknown as MySmartContract;
 
   const uploadBoth = async () => {
-    if (!file || !bodyValue) return;
+    if (!file) return;
+    if (!editorRef.current) return; // Ensure editorRef is defined
+    const markdownContent = editorRef.current.getHTML(); // Get Markdown content from TipTap editor
+
+    if (!markdownContent) return; // Ensure content is present
+
+    setBodyValue(markdownContent); // Update bodyValue with the content from the editor
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("message", JSON.stringify(bodyValue));
+    formData.append("message", markdownContent); // Send Markdown content as plain text
 
     try {
       const response = await fetch("/api/uploadBoth", {
@@ -71,11 +79,9 @@ export default function CreateProposal() {
     <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
       {address && (
         <>
-          <TipTap
-            onContentChange={(content: string) => setBodyValue(content)}
-          />
+          <TipTap ref={editorRef} />
           <FormControl marginTop="4">
-            <FormLabel>Arweave File</FormLabel>
+            <FormLabel>Arweave Image</FormLabel>
             <Input
               type="file"
               placeholder="Upload a file"

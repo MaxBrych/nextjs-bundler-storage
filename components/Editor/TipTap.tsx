@@ -1,46 +1,37 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { forwardRef, useImperativeHandle } from "react";
+
 import StarterKit from "@tiptap/starter-kit";
-import BubbleMenu from "@tiptap/extension-bubble-menu";
-import Dropcursor from "@tiptap/extension-dropcursor";
-import { schema } from "prosemirror-markdown";
-import { defaultMarkdownSerializer } from "prosemirror-markdown";
-import { ReactElement } from "react";
+import React from "react";
 
-interface TipTapProps {
-  onContentChange: (content: string) => void;
-  content?: string;
-  readOnly?: boolean;
-}
-
-const TipTap = ({
-  onContentChange,
-  content = "*Hello World!* 🌎️",
-  readOnly = false,
-}: TipTapProps): ReactElement | null => {
+const Tiptap = forwardRef((props, ref) => {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      BubbleMenu.configure({
-        element: document.querySelector(".menu") as HTMLElement | null,
-        shouldShow: ({ editor }) => {
-          return editor.isActive("image") || editor.isActive("link");
-        },
-      }),
-      Dropcursor.configure({
-        color: "#ff0000",
-        width: 2,
-      }),
-    ],
-    content: content,
-    editable: !readOnly,
-    onUpdate: ({ editor }) => {
-      const doc = editor.state.doc;
-      const markdown = defaultMarkdownSerializer.serialize(doc);
-      onContentChange(markdown);
-    },
+    extensions: [StarterKit],
+    content: `
+    <h1>
+      Markdown shortcuts make it easy to format the text while typing.
+    </h1>
+    <p>
+      To test that, start a new line and type <code>#</code> followed by a space to get a heading. Try <code>#</code>, <code>##</code>, <code>###</code>, <code>####</code>, <code>#####</code>, <code>######</code> for different levels.
+    </p>
+    <p>
+      Those conventions are called input rules in tiptap. Some of them are enabled by default. Try <code>></code> for blockquotes, <code>*</code>, <code>-</code> or <code>+</code> for bullet lists, or <code>\`foobar\`</code> to highlight code, <code>~~tildes~~</code> to strike text, or <code>==equal signs==</code> to highlight text.
+    </p>
+    <p>
+      You can overwrite existing input rules or add your own to nodes, marks and extensions.
+    </p>
+    <p>
+      For example, we added the <code>Typography</code> extension here. Try typing <code>(c)</code> to see how it’s converted to a proper © character. You can also try <code>-></code>, <code>>></code>, <code>1/2</code>, <code>!=</code>, or <code>--</code>.
+    </p>
+    `,
   });
 
-  return <EditorContent editor={editor} />;
-};
+  // Expose methods to the parent
+  useImperativeHandle(ref, () => ({
+    getHTML: () => editor?.getHTML(),
+  }));
 
-export default TipTap;
+  return <EditorContent editor={editor} />;
+});
+
+export default Tiptap;
