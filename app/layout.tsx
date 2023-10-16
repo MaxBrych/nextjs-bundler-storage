@@ -33,8 +33,11 @@ export default function RootLayout({
           supportedWallets={[coinbaseWallet(), localWallet(), metamaskWallet()]}
         >
           <ChakraProvider>
-            <NavBar />
-            <body>{children}</body>
+            <body>
+              {" "}
+              <NavBar />
+              {children}
+            </body>
           </ChakraProvider>
         </ThirdwebProvider>
       </CacheProvider>
