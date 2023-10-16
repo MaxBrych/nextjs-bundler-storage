@@ -77,6 +77,9 @@ export default function Navbar() {
             </MenuButton>
 
             <MenuList>
+              <MenuItem>
+                <Link href="/">Home</Link>
+              </MenuItem>
               <MenuItem onClick={handleProfileRedirect}>Profile</MenuItem>
               <MenuItem>
                 <Link href="/dashboard">Dashboard</Link>
