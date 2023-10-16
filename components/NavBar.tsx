@@ -9,6 +9,9 @@ import {
   MenuList,
   Text,
 } from "@chakra-ui/react";
+
+import { useRouter } from "next/navigation";
+
 import {
   ConnectWallet,
   useAddress,
@@ -31,6 +34,14 @@ export default function Navbar() {
   const isMismatched = useNetworkMismatch();
   const switchChain = useSwitchChain();
   const chainId = useChainId();
+
+  const router = useRouter();
+
+  const handleProfileRedirect = () => {
+    if (address) {
+      router.push(`/account/${address}`);
+    }
+  };
 
   return (
     <Container maxW={"1200px"} py={5}>
@@ -66,7 +77,16 @@ export default function Navbar() {
             </MenuButton>
 
             <MenuList>
-              <MenuItem>Profile</MenuItem>
+              <MenuItem onClick={handleProfileRedirect}>Profile</MenuItem>
+              <MenuItem>
+                <Link href="/dashboard">Dashboard</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href="/create-article">Create Article</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link href="/queue">Queue</Link>
+              </MenuItem>
 
               <MenuItem>
                 <Button

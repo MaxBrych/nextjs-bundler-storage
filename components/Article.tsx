@@ -19,12 +19,7 @@ const Article: React.FC<ArticleProps> = ({
   const formattedProposer = `${proposer.slice(0, 6)}...${proposer.slice(-4)}`;
 
   return (
-    <Box
-      borderWidth="1px"
-      borderRadius="lg"
-      padding={{ base: "2", md: "4" }}
-      marginTop="4"
-    >
+    <Box marginTop="4">
       <Text as="p" size="md">
         Proposer: {formattedProposer}
       </Text>
