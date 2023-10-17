@@ -32,3 +32,40 @@ body {
   background-color: #ff0000; /* Red color */
   width: 2px;
 }
+
+h1 {
+  font-size: 2em; /* example size */
+  font-weight: bold;
+  /* any other styles you want */
+}
+.tiptap h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  /* any other styles you want */
+}
+.tiptap h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+  /* any other styles you want */
+}
+.tiptap h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+}
+
+p {
+  margin: 1em 0;
+}
+.tiptap p {
+  margin: 1em 0;
+}
