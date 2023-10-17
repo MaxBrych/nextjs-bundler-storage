@@ -19,7 +19,7 @@ import {
   useOwnedNFTs,
   MediaRenderer,
 } from "@thirdweb-dev/react";
-import { NFT_ADDRESS } from "../../constants/addresses";
+import { NFT_ADDRESS } from "../../../constants/addresses";
 import { useRouter } from "next/router";
 
 import React from "react";
