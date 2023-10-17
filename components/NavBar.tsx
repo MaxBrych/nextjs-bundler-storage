@@ -39,7 +39,7 @@ export default function Navbar() {
 
   const handleProfileRedirect = () => {
     if (address) {
-      router.push(`/account/${address}`);
+      router.push(`/profile/${address}`);
     }
   };
 
