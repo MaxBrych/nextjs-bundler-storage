@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import Article from "./Article";
+import Link from "next/link"; // Import the Link component
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
@@ -9,6 +10,7 @@ interface MySmartContract extends ethers.Contract {
 }
 
 interface ArticleData {
+  hex: string; // Add a hex field to ArticleData
   imageUrl: string;
   proposer: string;
   timestamp: string;
@@ -17,6 +19,7 @@ interface ArticleData {
 
 const ArticleList: React.FC = () => {
   const [articles, setArticles] = useState<ArticleData[]>([]);
+  const [loading, setLoading] = useState(true); // Add a loading state
 
   const { contract: voteContract } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
@@ -26,8 +29,10 @@ const ArticleList: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); // Set loading to true at the start of fetchData
       if (!vote) {
         console.error("Vote contract is not loaded yet");
+        setLoading(false); // Set loading to false if vote contract isn't loaded
         return;
       }
 
@@ -83,10 +88,11 @@ const ArticleList: React.FC = () => {
               console.log("Body Content retrieved:", bodyContent);
 
               return {
+                hex: proposal.hex, // Updated this line
                 imageUrl: proposal.description,
-                proposer: proposal.proposer, // assuming "proposer" is the correct property name
+                proposer: proposal.proposer,
                 timestamp: proposal.timestamp,
-                body, // assuming "timestamp" is the correct property name
+                body,
               };
             } else {
               console.error("No transaction data returned from Arweave");
@@ -102,7 +108,8 @@ const ArticleList: React.FC = () => {
         (article) => article !== null
       );
 
-      setArticles(validArticles);
+      setArticles(validArticles.reverse()); // Reverse the order of articles
+      setLoading(false); // Set loading to false after articles have been set
     };
 
     fetchData();
@@ -110,15 +117,23 @@ const ArticleList: React.FC = () => {
 
   return (
     <div>
-      {articles.map((article, index) => (
-        <Article
-          key={index}
-          imageUrl={article.imageUrl}
-          proposer={article.proposer}
-          timestamp={article.timestamp}
-          body={article.body}
-        />
-      ))}
+      {loading ? (
+        <div>Loading...</div> // Display a loading message or skeleton loader here
+      ) : (
+        articles.map((article, index) => (
+          <Link href={`/article/${article.hex}`} key={index}>
+            {" "}
+            {/* Use Link component to route to individual article pages */}{" "}
+            {/* Wrap the Article component with an anchor tag */}
+            <Article
+              imageUrl={article.imageUrl}
+              proposer={article.proposer}
+              timestamp={article.timestamp}
+              body={undefined}
+            />
+          </Link>
+        ))
+      )}
     </div>
   );
 };
