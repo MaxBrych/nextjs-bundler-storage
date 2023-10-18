@@ -27,6 +27,7 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { HiMenuAlt4 } from "react-icons/hi";
+import Logo from "./ui/Logo";
 
 export default function Navbar() {
   const address = useAddress();
@@ -46,6 +47,7 @@ export default function Navbar() {
   return (
     <Container maxW={"1200px"} py={5}>
       <Flex justifyContent={"space-between"} alignItems={"center"}>
+        <Logo />
         {!address ? (
           <ConnectWallet btnTitle="Sign In" theme="light" />
         ) : isMismatched ? (
