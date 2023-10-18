@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { ethers } from "ethers";
 import ArticlePageComponent from "../../../components/ArticlePageComponent";
+import VotingButtons from "@/components/Queue/VotingButtons";
 
 interface ArticleData {
   hex: string;
@@ -30,10 +31,34 @@ const ArticlePage: React.FC = () => {
   console.log("Hex from URL:", hex);
 
   const [article, setArticle] = useState<ArticleData | null>(null);
+  const [isProposalActive, setIsProposalActive] = useState<boolean>(false);
+  const [totalVotes, setTotalVotes] = useState<number | null>(null);
+  const [votesCast, setVotesCast] = useState<number | null>(null);
+  const [votingDuration, setVotingDuration] = useState<string | null>(null);
+
   const { contract: voteContract } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
   );
   const vote = voteContract as unknown as MySmartContract;
+
+  // Handlers for voting buttons
+  const handleApprove = async () => {
+    if (vote && hex) {
+      await vote.castVote(hex, 1); // Assuming 1 represents approval
+    }
+  };
+
+  const handleAbstain = async () => {
+    if (vote && hex) {
+      await vote.castVote(hex, 0); // Assuming 0 represents abstain
+    }
+  };
+
+  const handleReject = async () => {
+    if (vote && hex) {
+      await vote.castVote(hex, 2); // Assuming 2 represents rejection
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,13 +66,36 @@ const ArticlePage: React.FC = () => {
         console.error("Vote contract is not loaded yet");
         return;
       }
+
       try {
         const allProposals = await vote.getAll();
-        // Correctly use proposal.proposalId._hex to find the right proposal
         const proposal = allProposals.find(
           (p: any) => p.proposalId._hex === hex
         );
+
         if (proposal) {
+          const { proposalId } = proposal;
+          const votes = await vote.getProposalVotes(proposalId); // Change this line
+          const againstVotes = ethers.utils.formatEther(votes[0].count);
+          const forVotes = ethers.utils.formatEther(votes[1].count);
+          const abstainVotes = ethers.utils.formatEther(votes[2].count);
+          const totalVotes = forVotes + againstVotes + abstainVotes;
+          const votesCast = forVotes + againstVotes; // Assuming abstain votes are not counted
+          const startBlock = proposal.startBlock;
+          const endBlock = proposal.endBlock;
+          const votingDuration = `Block ${startBlock} to ${endBlock}`;
+
+          // Set the state variables
+          setTotalVotes(parseInt(totalVotes));
+          setVotesCast(parseInt(votesCast));
+          setVotingDuration(votingDuration);
+          console.log({
+            isProposalActive,
+            totalVotes,
+            votesCast,
+            votingDuration,
+          });
+
           if (proposal.description.startsWith("https://arweave.net/")) {
             const transactionId = proposal.description.split("/").pop();
             // GraphQL query
@@ -108,6 +156,9 @@ const ArticlePage: React.FC = () => {
             }
           }
         }
+        // Check if the proposal is active
+        const active = await vote.isProposalActive(hex); // assuming hex is the proposal id
+        setIsProposalActive(active);
       } catch (error) {
         console.error("Error fetching proposals:", error);
       }
@@ -118,12 +169,23 @@ const ArticlePage: React.FC = () => {
   return (
     <div>
       {article ? (
-        <ArticlePageComponent
-          imageUrl={article.imageUrl}
-          proposer={article.proposer}
-          timestamp={article.timestamp}
-          body={article.body}
-        />
+        <>
+          <ArticlePageComponent
+            imageUrl={article.imageUrl}
+            proposer={article.proposer}
+            timestamp={article.timestamp}
+            body={article.body}
+          />
+          <VotingButtons
+            onApprove={handleApprove}
+            onAbstain={handleAbstain}
+            onReject={handleReject}
+            isProposalActive={isProposalActive}
+            totalVotes={totalVotes}
+            votesCast={votesCast}
+            votingDuration={votingDuration}
+          />
+        </>
       ) : (
         <div>Loading...</div>
       )}
