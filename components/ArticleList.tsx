@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import Article from "./Article";
-import Link from "next/link"; // Import the Link component
+import Skeleton from "react-loading-skeleton";
+import { useRouter } from "next/navigation";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
@@ -10,7 +11,7 @@ interface MySmartContract extends ethers.Contract {
 }
 
 interface ArticleData {
-  hex: string; // Add a hex field to ArticleData
+  id: string;
   imageUrl: string;
   proposer: string;
   timestamp: string;
@@ -19,7 +20,7 @@ interface ArticleData {
 
 const ArticleList: React.FC = () => {
   const [articles, setArticles] = useState<ArticleData[]>([]);
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   const { contract: voteContract } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
@@ -27,12 +28,12 @@ const ArticleList: React.FC = () => {
 
   const vote = voteContract as unknown as MySmartContract;
 
+  const router = useRouter();
+
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // Set loading to true at the start of fetchData
       if (!vote) {
-        console.error("Vote contract is not loaded yet");
-        setLoading(false); // Set loading to false if vote contract isn't loaded
+        console.error("Vote contract is not loaded yet :/");
         return;
       }
 
@@ -40,6 +41,9 @@ const ArticleList: React.FC = () => {
 
       const fetchedArticles: ArticleData[] = await Promise.all(
         proposals.map(async (proposal: any) => {
+          // Extract the unique identifier from proposal
+          const id = proposal[0].hex;
+
           if (proposal.description.startsWith("https://arweave.net/")) {
             const transactionId = proposal.description.split("/").pop();
 
@@ -88,18 +92,15 @@ const ArticleList: React.FC = () => {
               console.log("Body Content retrieved:", bodyContent);
 
               return {
-                hex: proposal.hex, // Updated this line
+                id,
                 imageUrl: proposal.description,
                 proposer: proposal.proposer,
                 timestamp: proposal.timestamp,
                 body,
               };
             } else {
-              console.error("No transaction data returned from Arweave");
               return null;
             }
-          } else {
-            return null;
           }
         })
       );
@@ -108,8 +109,8 @@ const ArticleList: React.FC = () => {
         (article) => article !== null
       );
 
-      setArticles(validArticles.reverse()); // Reverse the order of articles
-      setLoading(false); // Set loading to false after articles have been set
+      setArticles(validArticles.reverse());
+      setIsLoading(false);
     };
 
     fetchData();
@@ -117,21 +118,21 @@ const ArticleList: React.FC = () => {
 
   return (
     <div>
-      {loading ? (
-        <div>Loading...</div> // Display a loading message or skeleton loader here
+      {isLoading ? (
+        <Skeleton count={5} />
       ) : (
-        articles.map((article, index) => (
-          <Link href={`/article/${article.hex}`} key={index}>
-            {" "}
-            {/* Use Link component to route to individual article pages */}{" "}
-            {/* Wrap the Article component with an anchor tag */}
+        articles.map((article) => (
+          <div
+            key={article.id}
+            onClick={() => router.push(`/article/${article.id}`)}
+          >
             <Article
               imageUrl={article.imageUrl}
               proposer={article.proposer}
               timestamp={article.timestamp}
               body={undefined}
             />
-          </Link>
+          </div>
         ))
       )}
     </div>
