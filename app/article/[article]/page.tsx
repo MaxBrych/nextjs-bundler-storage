@@ -25,7 +25,10 @@ interface MySmartContract extends ethers.Contract {
 }
 
 const ArticlePage: React.FC = () => {
-  const { hex } = useParams(); // Get the hex value from the URL
+  const params = useParams(); // Get the hex value from the URL
+  const hex = params.article;
+  console.log("Hex from URL:", hex);
+
   const [article, setArticle] = useState<ArticleData | null>(null);
   const { contract: voteContract } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
@@ -40,7 +43,10 @@ const ArticlePage: React.FC = () => {
       }
       try {
         const allProposals = await vote.getAll();
-        const proposal = allProposals.find((p: any) => p[0]?.hex === hex);
+        // Correctly use proposal.proposalId._hex to find the right proposal
+        const proposal = allProposals.find(
+          (p: any) => p.proposalId._hex === hex
+        );
         if (proposal) {
           if (proposal.description.startsWith("https://arweave.net/")) {
             const transactionId = proposal.description.split("/").pop();
