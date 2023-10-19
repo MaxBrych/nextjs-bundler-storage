@@ -19,6 +19,8 @@ interface ArticleData {
   proposer: string;
   timestamp: string;
   body: any;
+  title: string;
+  teaser: string;
 }
 
 interface MySmartContract extends ethers.Contract {
@@ -130,7 +132,10 @@ const ArticlePage: React.FC = () => {
             // Get the metadata from the tags
             if (result.data.transactions.edges[0]) {
               const tags = result.data.transactions.edges[0].node.tags;
-
+              let title = tags.find((tag: any) => tag.name === "Title")?.value;
+              let teaser = tags.find(
+                (tag: any) => tag.name === "Teaser"
+              )?.value;
               let bodyContent = tags.find(
                 (tag: any) => tag.name === "Body"
               )?.value;
@@ -146,6 +151,8 @@ const ArticlePage: React.FC = () => {
               const articleData = {
                 hex: proposal.proposalId._hex,
                 imageUrl: proposal.description,
+                title,
+                teaser,
                 proposer: proposal.proposer,
                 timestamp: proposal.timestamp,
                 body,
@@ -172,6 +179,8 @@ const ArticlePage: React.FC = () => {
         <>
           <ArticlePageComponent
             imageUrl={article.imageUrl}
+            title={article.title}
+            teaser={article.teaser}
             proposer={article.proposer}
             timestamp={article.timestamp}
             body={article.body}
