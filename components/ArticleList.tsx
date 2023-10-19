@@ -97,11 +97,11 @@ const ArticleList: React.FC = () => {
               return {
                 hex: proposal.proposalId._hex,
                 imageUrl: proposal.description,
+                title,
+                teaser,
                 proposer: proposal.proposer,
                 timestamp: proposal.timestamp,
                 body,
-                title,
-                teaser,
               };
             } else {
               console.error("No transaction data returned from Arweave");
@@ -136,11 +136,11 @@ const ArticleList: React.FC = () => {
             {/* Wrap the Article component with an anchor tag */}
             <Article
               imageUrl={article.imageUrl}
+              title={article.title || ""}
+              teaser={article.teaser || ""}
               proposer={article.proposer}
               timestamp={article.timestamp}
               body={undefined}
-              title={article.title}
-              teaser={article.teaser}
             />
           </Link>
         ))

@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
   const tx = await bundlr.upload(buffer, {
     tags: [
       { name: "Content-Type", value: "image/png" },
-      { name: "Body", value: bodyString }, // Use the body value directly
       { name: "Title", value: title },
       { name: "Teaser", value: teaser },
+      { name: "Body", value: bodyString }, // Use the body value directly
     ],
   });
 

@@ -8,10 +8,14 @@ interface ArticleProps {
   proposer: string;
   timestamp: string;
   body: string | undefined;
+  title: string;
+  teaser: string;
 }
 
 const ArticlePageComponent: React.FC<ArticleProps> = ({
   imageUrl,
+  title,
+  teaser,
   proposer,
   timestamp,
   body,
@@ -20,13 +24,19 @@ const ArticlePageComponent: React.FC<ArticleProps> = ({
 
   return (
     <Box marginTop="4">
+      <Image src={imageUrl} alt={"No Image"} mt={4} />
+      <Heading as="h2" size="2xl">
+        {title || ""}
+      </Heading>
+      <Text as="p" size="lg">
+        {teaser || ""}
+      </Text>
       <Text as="p" size="md">
         Proposer: {formattedProposer}
       </Text>
       <Text as="p" size="md">
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
-      <Image src={imageUrl} alt={"No Image"} mt={4} />
       {/* Use ReactMarkdown to render the markdown content */}
       {/* Use dangerouslySetInnerHTML to render the HTML content */}
       <div dangerouslySetInnerHTML={{ __html: body || "" }} />

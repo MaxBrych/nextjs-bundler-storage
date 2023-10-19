@@ -24,11 +24,12 @@ const Article: React.FC<ArticleProps> = ({
 
   return (
     <Box marginTop="4">
+      <Image src={imageUrl} alt={"No Image"} mt={4} />
       <Heading as="h2" size="xl">
-        {title}
+        {title || ""}
       </Heading>
       <Text as="p" size="md">
-        {teaser}
+        {teaser || ""}
       </Text>
       <Text as="p" size="md">
         Proposer: {formattedProposer}
@@ -36,7 +37,6 @@ const Article: React.FC<ArticleProps> = ({
       <Text as="p" size="md">
         Timestamp: {new Date(Number(timestamp) * 1000).toLocaleString()}
       </Text>
-      <Image src={imageUrl} alt={"No Image"} mt={4} />
       {/* Use ReactMarkdown to render the markdown content */}
       {/* Use dangerouslySetInnerHTML to render the HTML content */}
       <div dangerouslySetInnerHTML={{ __html: body || "" }} />

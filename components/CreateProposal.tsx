@@ -83,10 +83,18 @@ export default function CreateProposal() {
     <Box borderWidth="1px" borderRadius="lg" padding="6" marginTop="4">
       {address && (
         <>
-          <div>
-            <TipTap ref={editorRef} />
-          </div>
           <FormControl marginTop="4">
+            <FormLabel>Arweave Image</FormLabel>
+            <Input
+              type="file"
+              placeholder="Upload a file"
+              onChange={handleFileChange}
+              cursor="pointer"
+              border="2px dashed"
+              height={24}
+              borderColor="gray.700"
+              borderRadius="xl"
+            />
             <FormControl marginTop="4">
               <FormLabel>Title</FormLabel>
               <Input
@@ -105,17 +113,9 @@ export default function CreateProposal() {
                 onChange={(e) => setTeaser(e.target.value)}
               />
             </FormControl>
-            <FormLabel>Arweave Image</FormLabel>
-            <Input
-              type="file"
-              placeholder="Upload a file"
-              onChange={handleFileChange}
-              cursor="pointer"
-              border="2px dashed"
-              height={24}
-              borderColor="gray.700"
-              borderRadius="xl"
-            />
+            <div>
+              <TipTap ref={editorRef} />
+            </div>
           </FormControl>
           <Button
             colorScheme="blue"

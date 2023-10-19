@@ -36,7 +36,7 @@ export default function CreateArticle() {
     "edition-drop"
   );
   const { contract: vote } = useContract(
-    "0x8f26F0e5BB70b759D7BEb97d5E0224Ec60b12178",
+    process.env.NEXT_PUBLIC_VOTE_ADDRESS,
     "vote"
   );
   if (vote === undefined) {
