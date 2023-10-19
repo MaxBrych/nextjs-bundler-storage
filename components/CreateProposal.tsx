@@ -22,6 +22,8 @@ export default function CreateProposal() {
   const [transaction, setTransaction] = useState("");
   const [bodyValue, setBodyValue] = useState("");
   const address = useAddress();
+  const [title, setTitle] = useState("");
+  const [teaser, setTeaser] = useState("");
 
   const { contract: voteContract, isLoading: isVoteLoading } = useContract<any>(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
@@ -41,6 +43,8 @@ export default function CreateProposal() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("message", markdownContent); // Send Markdown content as plain text
+    formData.append("title", title);
+    formData.append("teaser", teaser);
 
     try {
       const response = await fetch("/api/uploadBoth", {
@@ -83,6 +87,24 @@ export default function CreateProposal() {
             <TipTap ref={editorRef} />
           </div>
           <FormControl marginTop="4">
+            <FormControl marginTop="4">
+              <FormLabel>Title</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </FormControl>
+            <FormControl marginTop="4">
+              <FormLabel>Teaser</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter teaser"
+                value={teaser}
+                onChange={(e) => setTeaser(e.target.value)}
+              />
+            </FormControl>
             <FormLabel>Arweave Image</FormLabel>
             <Input
               type="file"

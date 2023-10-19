@@ -8,6 +8,9 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as any;
   const body = formData.get("message") as string; // body value
+  const title = formData.get("title") as string;
+  const teaser = formData.get("teaser") as string;
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const bodyString = typeof body === "string" ? body : JSON.stringify(body);
 
@@ -31,6 +34,8 @@ export async function POST(req: NextRequest) {
     tags: [
       { name: "Content-Type", value: "image/png" },
       { name: "Body", value: bodyString }, // Use the body value directly
+      { name: "Title", value: title },
+      { name: "Teaser", value: teaser },
     ],
   });
 

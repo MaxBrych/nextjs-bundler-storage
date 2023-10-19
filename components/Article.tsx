@@ -8,6 +8,8 @@ interface ArticleProps {
   proposer: string;
   timestamp: string;
   body: string | undefined;
+  title: string;
+  teaser: string;
 }
 
 const Article: React.FC<ArticleProps> = ({
@@ -15,11 +17,19 @@ const Article: React.FC<ArticleProps> = ({
   proposer,
   timestamp,
   body,
+  title,
+  teaser,
 }) => {
   const formattedProposer = `${proposer.slice(0, 6)}...${proposer.slice(-4)}`;
 
   return (
     <Box marginTop="4">
+      <Heading as="h2" size="xl">
+        {title}
+      </Heading>
+      <Text as="p" size="md">
+        {teaser}
+      </Text>
       <Text as="p" size="md">
         Proposer: {formattedProposer}
       </Text>

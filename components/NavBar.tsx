@@ -46,8 +46,10 @@ export default function Navbar() {
 
   return (
     <Container maxW={"1200px"} py={5}>
-      <Flex justifyContent={"space-between"} alignItems={"center"}>
-        <Logo />
+      <Flex justifyContent={"space-between"} alignItems={"center"} w={"full"}>
+        <Link href="/">
+          <Logo />
+        </Link>
         {!address ? (
           <ConnectWallet btnTitle="Sign In" theme="light" />
         ) : isMismatched ? (
