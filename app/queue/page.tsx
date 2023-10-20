@@ -19,6 +19,7 @@ import {
 } from "@thirdweb-dev/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { AddressZero } from "@ethersproject/constants";
+import Article from "@/components/Article";
 
 interface Vote {
   type: number;
@@ -33,6 +34,22 @@ interface Proposal {
   proposalId: any;
   description: string;
   votes: Vote[];
+}
+
+interface VoteContract {
+  // define the methods and properties of your vote contract here
+  vote: (proposalId: string, voteType: number) => Promise<void>;
+  getAll: () => Promise<Proposal[]>;
+  hasVoted: (proposalId: string, address: string) => Promise<boolean>;
+}
+interface ArticleData {
+  hex: string;
+  imageUrl: string;
+  title: string;
+  teaser: string;
+  proposer: string;
+  timestamp: number;
+  body: string | null;
 }
 
 export default function Queue() {
@@ -75,6 +92,93 @@ export default function Queue() {
   const [isVoting, setIsVoting] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedProposals, setVotedProposals] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true); // Add a loading state
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      if (!vote) {
+        console.error("Vote contract is not loaded yet");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const proposals = await vote.getAll();
+        const fetchedArticles: any = await Promise.all(
+          proposals.map(async (proposal: any) => {
+            const hex = proposal[0]?.hex;
+            if (proposal.description.startsWith("https://arweave.net/")) {
+              const transactionId = proposal.description.split("/").pop();
+              const query = `
+                        query getByIds {
+                          transactions(ids:["${transactionId}"]) {
+                            edges {
+                              node {
+                                id
+                                tags {
+                                  name
+                                  value
+                                }
+                              }
+                            }
+                          }
+                        }`;
+              const response = await fetch("https://arweave.net/graphql", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  query: query,
+                }),
+              });
+              const result = await response.json();
+              if (result.data.transactions.edges[0]) {
+                const tags = result.data.transactions.edges[0].node.tags;
+                let title = tags.find(
+                  (tag: any) => tag.name === "Title"
+                )?.value;
+                let teaser = tags.find(
+                  (tag: any) => tag.name === "Teaser"
+                )?.value;
+                let bodyContent = tags.find(
+                  (tag: any) => tag.name === "Body"
+                )?.value;
+                const body =
+                  bodyContent && bodyContent.startsWith("{")
+                    ? JSON.parse(bodyContent)
+                    : bodyContent
+                    ? bodyContent
+                    : null;
+                return {
+                  hex: proposal.proposalId._hex,
+                  imageUrl: proposal.description,
+                  title,
+                  teaser,
+                  proposer: proposal.proposer,
+                  timestamp: proposal.timestamp,
+                  body,
+                };
+              } else {
+                console.error("No transaction data returned from Arweave");
+                return null;
+              }
+            } else {
+              return null;
+            }
+          })
+        );
+        // Assuming you'll use fetchedArticles later
+        console.log(fetchedArticles);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [vote]);
 
   // Retrieve all our existing proposals from the contract.
   useEffect(() => {
@@ -127,6 +231,34 @@ export default function Queue() {
   // If the user has already claimed their NFT we want to display the internal DAO page to them
   // only DAO members will see this. Render all the members + token amounts.
   if (hasClaimedNFT) {
+    const handleVote = async (proposalId: string, voteType: number) => {
+      try {
+        // Check if the necessary method is available on the vote contract
+        if (typeof vote?.vote !== "function") {
+          console.error("vote method is not available on vote contract");
+          return;
+        }
+
+        // Disable voting button to prevent multiple votes
+        setIsVoting(true);
+
+        // Send the vote to the smart contract
+        await vote.vote(proposalId, voteType);
+
+        // Update the local state to reflect the vote
+        setVotedProposals((prevProposals) => [...prevProposals, proposalId]);
+
+        console.log("Vote submitted successfully");
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Failed to submit vote:", error.message);
+        }
+      } finally {
+        // Re-enable voting button
+        setIsVoting(false);
+      }
+    };
+
     return (
       <>
         <Container padding={16} maxWidth={1240} className="member-page">
@@ -276,20 +408,29 @@ export default function Queue() {
                       : {}
                   }
                 >
+                  <Article
+                    // It seems like `article` was not defined, assuming it should be `proposal`
+                    imageUrl={proposal.imageUrl}
+                    title={proposal.title || ""}
+                    teaser={proposal.teaser || ""}
+                    proposer={proposal.proposer}
+                    timestamp={proposal.timestamp}
+                    body={undefined}
+                  />
+
                   <Heading fontSize={16}>{proposal.description}</Heading>
                   <div>
                     {proposal.votes.map(({ type, label }: any) => (
                       <Flex key={type}>
-                        <Radio
-                          type="radio"
-                          id={proposal.proposalId + "-" + type}
-                          name={proposal.proposalId}
-                          value={type}
-                          defaultChecked={type === 2}
+                        <Button
+                          key={type}
+                          onClick={() => handleVote(proposal.proposalId, type)}
                           disabled={votedProposals.includes(
                             proposal.proposalId
                           )}
-                        />
+                        >
+                          {label}
+                        </Button>
                         <FormLabel htmlFor={proposal.proposalId + "-" + type}>
                           {label}
                         </FormLabel>
