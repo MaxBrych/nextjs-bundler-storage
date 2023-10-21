@@ -42,9 +42,9 @@ export default function CreateProposal() {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("message", markdownContent); // Send Markdown content as plain text
     formData.append("title", title);
     formData.append("teaser", teaser);
+    formData.append("message", markdownContent); // Send Markdown content as plain text
 
     try {
       const response = await fetch("/api/uploadBoth", {

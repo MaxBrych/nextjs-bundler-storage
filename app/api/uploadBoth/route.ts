@@ -7,9 +7,9 @@ const MIN_FUNDS = 0.1;
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as any;
-  const body = formData.get("message") as string; // body value
   const title = formData.get("title") as string;
   const teaser = formData.get("teaser") as string;
+  const body = formData.get("message") as string; // body value
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const bodyString = typeof body === "string" ? body : JSON.stringify(body);
