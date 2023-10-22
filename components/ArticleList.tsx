@@ -125,7 +125,7 @@ const ArticleList: React.FC = () => {
   }, [vote]);
 
   return (
-    <div>
+    <div className="w-full max-w-4xl ">
       {loading ? (
         <div>Loading...</div> // Display a loading message or skeleton loader here
       ) : (

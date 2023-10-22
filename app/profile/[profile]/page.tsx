@@ -44,7 +44,7 @@ export default function ProfilePage() {
       <Heading mt={10}>Profile</Heading>
       <Box mt={10}>
         <Text fontWeight={"bold"}>My Membership:</Text>
-        <SimpleGrid columns={3} spacing={10} my={4}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} my={4}>
           {!loadingOwnedNFTs &&
             ownedNFTs?.map((nft) => (
               <Card overflow="hidden" p={2} key={nft.metadata.id}>

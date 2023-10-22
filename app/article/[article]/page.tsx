@@ -176,7 +176,7 @@ const ArticlePage: React.FC = () => {
   return (
     <div>
       {article ? (
-        <>
+        <div className="max-w-4xl p-4 md:p-8">
           <ArticlePageComponent
             imageUrl={article.imageUrl}
             title={article.title}
@@ -194,7 +194,7 @@ const ArticlePage: React.FC = () => {
             votesCast={votesCast}
             votingDuration={votingDuration}
           />
-        </>
+        </div>
       ) : (
         <div>Loading...</div>
       )}

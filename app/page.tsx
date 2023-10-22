@@ -24,22 +24,9 @@ const Home = () => {
   const address = useAddress();
   //console.log("👋 Address:", address);
 
-  // This is the case where the user hasn't connected their wallet
-  // to your web app. Let them call connectWallet.
-  if (!address) {
-    return (
-      <Container className="landing">
-        <Heading>Welcome to The Netizen</Heading>
-        <div className="btn-hero">
-          <ConnectWallet />
-        </div>
-      </Container>
-    );
-  }
-
   return (
     <>
-      <Container padding={16} maxWidth={1240} className="member-page">
+      <Container maxWidth={1240} className="px-4 member-page">
         <Heading>Welcome to The Netizen</Heading>
         <ArticleList />
       </Container>

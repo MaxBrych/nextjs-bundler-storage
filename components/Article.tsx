@@ -1,7 +1,8 @@
 // Import the required libraries
 import React from "react";
-import { Box, Heading, Image, Text } from "@chakra-ui/react";
+import { Box, Heading, Text } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
+import Image from "next/image";
 
 interface ArticleProps {
   imageUrl: string;
@@ -24,7 +25,13 @@ const Article: React.FC<ArticleProps> = ({
 
   return (
     <Box marginTop="4">
-      <Image src={imageUrl} alt={"No Image"} mt={4} />
+      <Image
+        src={imageUrl}
+        alt={"No Image"}
+        width={560}
+        height={320}
+        className="object-cover object-center w-full mb-2 rounded-lg max-h-80 md:max-h-[520px]"
+      />
       <Heading as="h2" size="xl">
         {title || ""}
       </Heading>
