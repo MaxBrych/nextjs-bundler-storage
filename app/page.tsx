@@ -3,6 +3,8 @@ import { useAddress, useNetwork, ConnectWallet } from "@thirdweb-dev/react";
 import { Container, Heading } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 import ArticleList from "@/components/ArticleList";
+import UploadForm from "@/components/UploadForm";
+import MetadataList from "@/components/MetadataList";
 
 interface Vote {
   type: number;
@@ -28,7 +30,9 @@ const Home = () => {
     <>
       <Container maxWidth={1240} className="px-4 member-page">
         <Heading>Welcome to The Netizen</Heading>
-        <ArticleList />
+
+        <UploadForm />
+        <MetadataList />
       </Container>
     </>
   );
