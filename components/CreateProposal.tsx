@@ -4,6 +4,7 @@ import { useState, ChangeEvent } from "react";
 import { useAddress, useContract, useContractWrite } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { Box, Input, Button, FormControl, FormLabel } from "@chakra-ui/react";
+import { uploadMetadata } from "@/utils/uploadMetadata";
 
 interface MySmartContract extends ethers.Contract {
   getAll: () => Promise<any>;
@@ -33,44 +34,25 @@ export default function CreateProposal() {
 
   const uploadBoth = async () => {
     if (!file) return;
-    if (!editorRef.current) return; // Ensure editorRef is defined
-    const markdownContent = editorRef.current.getHTML(); // Get Markdown content from TipTap editor
+    if (!editorRef.current) return;
+    const markdownContent = editorRef.current.getHTML();
 
-    if (!markdownContent) return; // Ensure content is present
+    if (!markdownContent) return;
 
-    setBodyValue(markdownContent); // Update bodyValue with the content from the editor
+    setBodyValue(markdownContent);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-    formData.append("teaser", teaser);
-    formData.append("message", markdownContent); // Send Markdown content as plain text
+    const metadata = {
+      title,
+      teaser,
+      description: markdownContent,
+      image: file,
+    };
+    const url = await uploadMetadata(metadata); // Use uploadMetadata to upload the file
 
-    try {
-      const response = await fetch("/api/uploadBoth", {
-        method: "POST",
-        body: formData,
-      });
-      const json = await response.json();
-      console.log("json:", json);
-      setTransaction(json.txId);
-
-      if (vote) {
-        await vote.propose(json.txId);
-        window.location.reload();
-      }
-    } catch (err) {
-      console.log({ err });
+    if (url && vote) {
+      await vote.propose(url); // Propose the returned URL
+      window.location.reload();
     }
-
-    try {
-      JSON.parse(bodyValue);
-    } catch (e) {
-      console.error("Invalid JSON:", bodyValue);
-      return;
-    }
-
-    console.log("Body Value to upload:", bodyValue);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
