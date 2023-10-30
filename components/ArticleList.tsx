@@ -33,7 +33,7 @@ const ArticleList: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     if (!vote) {
-      console.error("Vote contract is not loaded yet.");
+      console.error("Vote contract is not loaded yet");
       setLoading(false);
       return;
     }
