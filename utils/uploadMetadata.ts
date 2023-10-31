@@ -14,7 +14,7 @@ export const uploadMetadata = async (metadata: any) => {
   // Add the AppName tag along with the Content-Type tag
   const tags = [
     { name: "Content-Type", value: "application/json" },
-    { name: "AppName", value: "Netizen" }, // Add this line
+    { name: "AppName", value: "Netizen" },
   ];
 
   try {

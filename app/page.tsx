@@ -31,7 +31,8 @@ const Home = () => {
       <Container maxWidth={1240} className="px-4 member-page">
         <Heading>Welcome to The Netizen</Heading>
 
-        <ArticleList />
+        <UploadForm />
+        <MetadataList />
       </Container>
     </>
   );

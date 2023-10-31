@@ -1,10 +1,13 @@
 "use client";
-// app/components/NFTForm.tsx
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useRef } from "react";
 import { uploadMetadata } from "../utils/uploadMetadata";
 import TipTap from "./Editor/TipTap";
-import Tiptap from "./Editor/TipTap";
-import { useRef } from "react";
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
+
+interface MySmartContract extends ethers.Contract {
+  propose: (url: string) => Promise<void>;
+}
 
 export const UploadForm = () => {
   const editorRef = useRef<{ getHTML: () => string } | null>(null);
@@ -12,6 +15,12 @@ export const UploadForm = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [metadataUrl, setMetadataUrl] = useState("");
+
+  const { contract: voteContract } = useContract(
+    process.env.NEXT_PUBLIC_VOTE_ADDRESS
+  );
+
+  const { mutateAsync: propose } = useContractWrite(voteContract, "propose");
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -34,12 +43,20 @@ export const UploadForm = () => {
 
     const metadata = { name, description, image };
     const url = await uploadMetadata(metadata);
-    if (url) {
-      // Only call setMetadataUrl if url is defined.
-      setMetadataUrl(url);
-      console.log("Metadata uploaded with URL:", url);
+
+    if (url && propose) {
+      try {
+        await propose({
+          args: [url],
+          overrides: {},
+        });
+        setMetadataUrl(url);
+        console.log("Metadata uploaded and proposal created with URL:", url);
+      } catch (err) {
+        console.error("Failed to create proposal:", err);
+      }
     } else {
-      console.error("Failed to upload metadata");
+      console.error("Failed to upload metadata or propose is not available");
     }
   };
 
