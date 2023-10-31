@@ -47,7 +47,12 @@ export const UploadForm = () => {
     if (url && propose) {
       try {
         await propose({
-          args: [url],
+          args: [
+            [], // targets: string[]
+            [], // values: BigNumberish[]
+            [], // calldatas: BytesLike[]
+            url, // description: string
+          ],
           overrides: {},
         });
         setMetadataUrl(url);
