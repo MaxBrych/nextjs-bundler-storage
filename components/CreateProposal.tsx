@@ -30,7 +30,7 @@ export default function CreateProposal() {
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
   );
 
-  const vote = voteContract as unknown as MySmartContract;
+  const vote = voteContract as any;
 
   const uploadBoth = async () => {
     if (!file) return;
@@ -49,9 +49,19 @@ export default function CreateProposal() {
     };
     const url = await uploadMetadata(metadata); // Use uploadMetadata to upload the file
 
-    if (url && vote) {
-      await vote.propose(url); // Propose the returned URL
-      window.location.reload();
+    const { mutateAsync: propose, isLoading } = useContractWrite(
+      vote,
+      "propose"
+    );
+
+    if (url && propose) {
+      try {
+        const data = await propose({ args: [[], [], [], url] }); // assuming that targets, values, and calldatas are empty arrays in this case
+        console.info("contract call success", data);
+        window.location.reload();
+      } catch (err) {
+        console.error("contract call failure", err);
+      }
     }
   };
 
