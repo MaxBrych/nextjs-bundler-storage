@@ -58,18 +58,23 @@ export default function MetadataEntry({
   }, [isVoteLoading]);
 
   const voteFor = async () => {
-    await vote.vote(id, VoteType.For);
+    castVote(VoteType.For);
     getProposalData(); // Update the votes count after casting vote
   };
 
   const voteAgainst = async () => {
-    await vote.vote(id, VoteType.Against);
+    castVote(VoteType.Against);
     getProposalData(); // Update the votes count after casting vote
   };
 
   const voteAbstain = async () => {
-    await vote.vote(id, VoteType.Abstain);
+    castVote(VoteType.Abstain);
     getProposalData(); // Update the votes count after casting vote
+  };
+
+  const castVote = async (voteType: VoteType) => {
+    await vote.vote(id, voteType);
+    window.location.reload();
   };
 
   let url: string | undefined;
@@ -78,48 +83,49 @@ export default function MetadataEntry({
   }
 
   return (
-    <Link
-      href={`https://node1.irys.xyz/${id}`}
-      target="_blank"
-      className="flex flex-col"
-      key={id}
-    >
-      <Image
-        width={320}
-        height={320}
-        src={url ?? ""}
-        alt={name}
-        className="object-cover object-center w-full rounded-lg max-h-56"
-      />
-      <p className="text-xs opacity-80">{formatDate(timestamp)}</p>
-      <p className="text-lg font-medium ">{name}</p>
-      <p className="text-sm opacity-80">{description}</p>
+    <div className="flex flex-col">
+      <Link
+        href={`/article/${id}`}
+        target="_blank"
+        className="flex flex-col"
+        key={id}
+      >
+        <Image
+          width={320}
+          height={320}
+          src={url ?? ""}
+          alt={name}
+          className="object-cover object-center w-full rounded-lg max-h-56"
+        />
+        <p className="text-xs opacity-80">{formatDate(timestamp)}</p>
+        <p className="text-lg font-medium ">{name}</p>
+        <p className="text-sm opacity-80">{description}</p>
 
-      <p className="text-xs opacity-80">{address}</p>
-
+        <p className="text-xs opacity-80">{address}</p>
+      </Link>
       <div className="flex gap-2">
         <button
-          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          className="flex justify-center px-4 py-2 text-sm text-black rounded-md cursor-pointer bg-zinc-100"
           disabled={hasVoted}
           onClick={voteFor}
         >
           For {votes.for}
         </button>
         <button
-          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          className="flex justify-center px-4 py-2 text-sm text-black rounded-md cursor-pointer bg-zinc-100"
           disabled={hasVoted}
           onClick={voteAgainst}
         >
           Against {votes.against}
         </button>
         <button
-          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          className="flex justify-center px-4 py-2 text-sm text-black rounded-md cursor-pointer bg-zinc-100"
           disabled={hasVoted}
           onClick={voteAbstain}
         >
           Abstain {votes.abstain}
         </button>
       </div>
-    </Link>
+    </div>
   );
 }

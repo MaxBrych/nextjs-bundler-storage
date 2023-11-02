@@ -42,6 +42,7 @@ const MetadataList = () => {
       console.error("Error fetching proposals:", error);
       setError("Failed to load proposals. Please try again later.");
     }
+    console.log("proposals", proposals);
     setIsLoading(false);
   };
 
