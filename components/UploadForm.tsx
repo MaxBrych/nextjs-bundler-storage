@@ -5,26 +5,16 @@ import TipTap from "./Editor/TipTap";
 import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 
-interface MySmartContract extends ethers.Contract {
-  propose: (url: string) => Promise<void>;
-}
-
 export const UploadForm = () => {
   const editorRef = useRef<{ getHTML: () => string } | null>(null);
 
   const [name, setName] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [metadataUrl, setMetadataUrl] = useState("");
-
-  const { contract: vote } = useContract<any>(
-    process.env.NEXT_PUBLIC_VOTE_ADDRESS
-  );
-
   const { contract: voteContract } = useContract(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
   );
-
-  const propose = useContractWrite(voteContract, "propose");
+  const vote = voteContract as any;
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -40,12 +30,6 @@ export const UploadForm = () => {
   };
 
   const handleSubmit = async (e: any) => {
-    const { contract: voteContract } = useContract(
-      process.env.NEXT_PUBLIC_VOTE_ADDRESS
-    );
-    const vote = voteContract as unknown as MySmartContract;
-    const propose = useContractWrite(voteContract, "propose");
-
     e.preventDefault();
 
     // Get the description from the editor
@@ -56,15 +40,17 @@ export const UploadForm = () => {
 
     if (url) {
       try {
-        await vote.propose(url);
+        await vote.propose(url); // use the vote instance you already have
         setMetadataUrl(url);
         console.log("Metadata uploaded and proposal created with URL:", url);
+        window.location.reload();
       } catch (err) {
         console.error("Failed to create proposal:", err);
       }
     } else {
       console.error("Failed to upload metadata or propose is not available");
     }
+
     if (!vote) {
       console.error("Contract not defined.");
       return;
