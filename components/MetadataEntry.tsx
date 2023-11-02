@@ -84,12 +84,7 @@ export default function MetadataEntry({
 
   return (
     <div className="flex flex-col">
-      <Link
-        href={`/article/${id}`}
-        target="_blank"
-        className="flex flex-col"
-        key={id}
-      >
+      <Link href={`/article/${id}`} className="flex flex-col" key={id}>
         <Image
           width={320}
           height={320}
