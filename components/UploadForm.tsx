@@ -66,7 +66,7 @@ export const UploadForm = () => {
       console.error("Failed to upload metadata or propose is not available");
     }
     if (!vote) {
-      console.error("Contract not defined");
+      console.error("Contract not defined.");
       return;
     }
   };
