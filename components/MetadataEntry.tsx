@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useAddress, useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { VoteType } from "@thirdweb-dev/sdk";
+import Image from "next/image";
+import Link from "next/link";
 
 interface MySmartContract {
   hasVoted: (proposalId: string, address: string) => Promise<boolean>;
   getProposalVotes: (proposalId: string) => Promise<any>;
   vote: (proposalId: string, voteType: VoteType) => Promise<void>;
+}
+
+function formatDate(timestamp: string | number | Date) {
+  const date = new Date(timestamp);
+  return `${
+    date.getMonth() + 1
+  }/${date.getDate()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 }
 
 export default function MetadataEntry({
@@ -63,26 +72,54 @@ export default function MetadataEntry({
     getProposalData(); // Update the votes count after casting vote
   };
 
-  const blob = new Blob([new Uint8Array(image.data)], { type: "image/jpeg" });
-  const url = URL.createObjectURL(blob);
+  let url: string | undefined;
+  if (image && image.startsWith("data:")) {
+    url = image; // The image field now contains a data URL directly
+  }
 
   return (
-    <div className="metadata-entry">
-      <p>ID: {id}</p>
-      <p>Name: {name}</p>
-      <p>Description: {description}</p>
-      <p>Timestamp: {timestamp}</p>
-      <p>Address: {address}</p>
-      <img src={url} alt={name} /> {/* Fixed src attribute to use url */}
-      <button disabled={hasVoted} onClick={voteFor}>
-        For {votes.for}
-      </button>
-      <button disabled={hasVoted} onClick={voteAgainst}>
-        Against {votes.against}
-      </button>
-      <button disabled={hasVoted} onClick={voteAbstain}>
-        Abstain {votes.abstain}
-      </button>
-    </div>
+    <Link
+      href={`https://node1.irys.xyz/${id}`}
+      target="_blank"
+      className="flex flex-col"
+      key={id}
+    >
+      <Image
+        width={320}
+        height={320}
+        src={url ?? ""}
+        alt={name}
+        className="object-cover object-center w-full rounded-lg max-h-56"
+      />
+      <p className="text-xs opacity-80">{formatDate(timestamp)}</p>
+      <p className="text-lg font-medium ">{name}</p>
+      <p className="text-sm opacity-80">{description}</p>
+
+      <p className="text-xs opacity-80">{address}</p>
+
+      <div className="flex gap-2">
+        <button
+          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          disabled={hasVoted}
+          onClick={voteFor}
+        >
+          For {votes.for}
+        </button>
+        <button
+          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          disabled={hasVoted}
+          onClick={voteAgainst}
+        >
+          Against {votes.against}
+        </button>
+        <button
+          className="flex justify-center px-6 py-2 text-black rounded-md cursor-pointer bg-zinc-100"
+          disabled={hasVoted}
+          onClick={voteAbstain}
+        >
+          Abstain {votes.abstain}
+        </button>
+      </div>
+    </Link>
   );
 }

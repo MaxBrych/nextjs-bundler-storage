@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 
 import { Box } from "@chakra-ui/react";
+import UploadForm from "@/components/UploadForm";
 interface Vote {
   type: number;
   label: string;
@@ -74,7 +75,9 @@ export default function CreateArticle() {
   if (hasClaimedNFT) {
     return (
       <>
-        <Box p="6" bgColor="white" textColor={"blackAlpha.900"}></Box>
+        <Box p="6" bgColor="white" textColor={"blackAlpha.900"}>
+          <UploadForm />
+        </Box>
       </>
     );
   }
