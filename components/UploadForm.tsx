@@ -16,11 +16,15 @@ export const UploadForm = () => {
   const [image, setImage] = useState<string | null>(null);
   const [metadataUrl, setMetadataUrl] = useState("");
 
+  const { contract: vote } = useContract<any>(
+    process.env.NEXT_PUBLIC_VOTE_ADDRESS
+  );
+
   const { contract: voteContract } = useContract(
     process.env.NEXT_PUBLIC_VOTE_ADDRESS
   );
 
-  const { mutateAsync: propose } = useContractWrite(voteContract, "propose");
+  const propose = useContractWrite(voteContract, "propose");
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -36,6 +40,12 @@ export const UploadForm = () => {
   };
 
   const handleSubmit = async (e: any) => {
+    const { contract: voteContract } = useContract(
+      process.env.NEXT_PUBLIC_VOTE_ADDRESS
+    );
+    const vote = voteContract as unknown as MySmartContract;
+    const propose = useContractWrite(voteContract, "propose");
+
     e.preventDefault();
 
     // Get the description from the editor
@@ -44,17 +54,9 @@ export const UploadForm = () => {
     const metadata = { name, description, image };
     const url = await uploadMetadata(metadata);
 
-    if (url && propose) {
+    if (url) {
       try {
-        await propose({
-          args: [
-            [], // targets: string[]
-            [], // values: BigNumberish[]
-            [], // calldatas: BytesLike[]
-            url, // description: string
-          ],
-          overrides: {},
-        });
+        await vote.propose(url);
         setMetadataUrl(url);
         console.log("Metadata uploaded and proposal created with URL:", url);
       } catch (err) {
@@ -62,6 +64,10 @@ export const UploadForm = () => {
       }
     } else {
       console.error("Failed to upload metadata or propose is not available");
+    }
+    if (!vote) {
+      console.error("Contract not defined");
+      return;
     }
   };
 
